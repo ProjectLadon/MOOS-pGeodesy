@@ -1,0 +1,9 @@
+//------------------------------------------------
+// pGeodesy config block
+
+ProcessConfig = pGeodesy
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+
