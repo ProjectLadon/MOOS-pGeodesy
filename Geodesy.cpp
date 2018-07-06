@@ -224,6 +224,24 @@ void Geodesy::registerVariables() {
 // Procedure: buildReport()
 
 bool Geodesy::buildReport() {
-    m_msgs << "This space intentionally left blank";
+    m_msgs << "============================================ \n";
+    m_msgs << "Geodesy                                      \n";
+    m_msgs << "============================================ \n";
+
+    ACTable actab(5);
+    actab << "  | WGS84 | UTM | Local | Origin (WG84)";
+    actab.addHeaderLines();
+    actab << "North";
+    actab << m_lat;
+    actab << m_northing;
+    actab << m_localNorth;
+    actab << m_originLat;
+    actab << "East";
+    actab << m_lon;
+    actab << m_easting;
+    actab << m_localEast;
+    actab << m_originLon;
+    actab << "Zone" << " " << m_geo.GetUTMZone();
+    m_msgs << actab.getFormattedString(); 
     return(true);
 }
