@@ -41,7 +41,7 @@ class Geodesy : public AppCastingMOOSApp {
         std::string     m_outputOriginLonVar;
         std::string     m_rebaseTriggerVar;
         std::string     m_rebaseNotifyVar;
-        uint32_t        m_rebaseDistance            = 0xffffffff;
+        uint64_t        m_rebaseDistance            = 0xffffffff;
         uint16_t        m_originOutputPeriod        = 10;
         uint16_t        m_originRebasePeriod        = 10;
 

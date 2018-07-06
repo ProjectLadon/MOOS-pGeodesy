@@ -182,7 +182,17 @@ bool Geodesy::OnStartUp() {
                 cerr << " in configuration JSON at offset " << conf.GetErrorOffset() << endl;
                 std::abort();
             }
-
+            if (conf.HasMember("rebase_condition") && conf["rebase_conditions"].IsString()) {
+                string condition = conf["rebase_condition"].GetString();
+                if ((condition == "distance") && conf.HasMember("rebase_distance") && conf["rebase_distance"].IsNumber()) {
+                    m_rebaseDistance = conf["rebase_distance"].GetInt();
+                } else if ((condition == "triggered") && conf.HasMember("rebase_trigger_var") && conf["rebase_trigger_var"].IsString()) {
+                    m_rebaseTriggerVar = conf["rebase_trigger_var"].GetString();
+                } else if ((condition == "both")&& conf.HasMember("rebase_distance") && conf["rebase_distance"].IsNumber() && conf.HasMember("rebase_trigger_var") && conf["rebase_trigger_var"].IsString()) {
+                    m_rebaseDistance = conf["rebase_distance"].GetInt();
+                    m_rebaseTriggerVar = conf["rebase_trigger_var"].GetString();
+                }
+            }
             handled = true;
         }
 
