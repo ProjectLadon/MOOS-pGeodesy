@@ -9,8 +9,15 @@
 #include "MBUtils.h"
 #include "ACTable.h"
 #include "Geodesy.h"
+#include "rapidjson/rapidjson.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/document.h"
+#include "rapidjson/schema.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/error/en.h"
 
 using namespace std;
+using namespace rapidjson;
 
 //---------------------------------------------------------
 // Constructor
@@ -93,6 +100,9 @@ bool Geodesy::Iterate() {
                 m_lastOriginTransmission = 0;
             } else {m_lastOriginTransmission++;}
         }
+        if (m_fixValid && ((m_localNorth*m_localNorth + m_localEast*m_localEast) > (m_rebaseDistance*m_rebaseDistance))) {
+            m_originValid = false;
+        }
     } else {
         if (m_originRebaseCount > m_originRebasePeriod) {
             m_originLat = m_originLatAccumulator/m_originRebaseCount;
@@ -165,6 +175,14 @@ bool Geodesy::OnStartUp() {
             m_outputOriginLonVar = value;
             handled = true;
         } else if(param == "REBASECONF") {
+            string json = value;
+            Document conf;
+            if (conf.Parse(value.c_str()).HasParseError()) {
+                cerr << "JSON parse error " << GetParseError_En(conf.GetParseError());
+                cerr << " in configuration JSON at offset " << conf.GetErrorOffset() << endl;
+                std::abort();
+            }
+
             handled = true;
         }
 
@@ -195,17 +213,7 @@ void Geodesy::registerVariables() {
 //------------------------------------------------------------
 // Procedure: buildReport()
 
-bool Geodesy::buildReport()
-{
-  m_msgs << "============================================ \n";
-  m_msgs << "File:                                        \n";
-  m_msgs << "============================================ \n";
-
-  ACTable actab(4);
-  actab << "Alpha | Bravo | Charlie | Delta";
-  actab.addHeaderLines();
-  actab << "one" << "two" << "three" << "four";
-  m_msgs << actab.getFormattedString();
-
-  return(true);
+bool Geodesy::buildReport() {
+    m_msgs << "This space intentionally left blank";
+    return(true);
 }

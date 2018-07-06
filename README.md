@@ -40,7 +40,7 @@ The local coordinates can also be re-based to the current location of the boat i
 	"id": "Geodesy_rebase",
     "type": "object",
     "properties": {
-        "rebase_condition": {"type": "string", "enum": ["none", "distance", "triggered"]},
+        "rebase_condition": {"type": "string", "enum": ["none", "distance", "triggered", "both"]},
         "rebase_distance": {"type": "number"},
         "rebase_trigger_var": {"type": "string"},
         "rebase_notify_var": {"type": "string"}
