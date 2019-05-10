@@ -1,0 +1,69 @@
+//------------------------------------
+// NAME: Pierce Nichols, Ladon Project
+// FILE: geodesy_test.moos
+//------------------------------------
+
+ServerHost	= localhost
+ServerPort 	= 9000
+Community	= geodesy_test
+MOOSTimeWarp 	= 1
+
+// Optimism Brewing
+//LatOrigin  = 47.6128
+//LongOrigin = -122.3205
+
+//------------------------------------
+// Antler Configuration block
+ProcessConfig = ANTLER
+{
+	MSBetweenLaunches = 200
+
+	Run = MOOSDB   @ NewConsole = false
+	Run = pGPSd	   @ NewConsole = false
+    Run = pGeodesy @ NewConsole = false
+	Run = pLogger  @ NewConsole = false
+}
+
+ProcessConfig = pGPSd
+{
+	AppTick = 5
+	CommsTick = 5
+}
+
+ProcessConfig = pGeodesy
+{
+	AppTick = 5
+	CommsTick = 5
+    InputLat = GPSD_latitude
+    InputLon = GPSD_longitude
+    InputFixStatus = GPSD_mode
+    OutputX = NAV_X
+    OutputY = NAV_Y
+    OutputEasting = NAV_UTM_EASTING
+    OutputNorthing = NAV_UTM_NORTHING
+    OutputUTMzone = NAV_UTM_ZONE
+    OutputOriginPeriod = 100
+    OutputOriginLat = ORIGIN_LAT
+    OutputOriginLon = ORIGIN_LON
+}
+
+ProcessConfig = pLogger
+{
+	AppTick = 20
+	CommsTick = 20
+	SyncLog = true @ 0.2
+	AsyncLog = true
+	Log = GPSD_mode @ 0
+	Log = GPSD_latitude @ 0
+	Log = GPSD_longitude @ 0
+	Log = GPSD_speed @ 0
+	Log = GPSD_track @ 0
+    Log = NAV_X @ 0
+    Log = NAV_Y @ 0
+    Log = NAV_UTM_EASTING @ 0
+    Log = NAV_UTM_NORTHING @ 0
+    Log = NAV_UTM_ZONE @ 0
+    Log = 100 @ 0
+    Log = ORIGIN_LAT @ 0
+    Log = ORIGIN_LON @ 0
+}

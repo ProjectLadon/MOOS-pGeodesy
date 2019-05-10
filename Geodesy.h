@@ -28,6 +28,16 @@ class Geodesy : public AppCastingMOOSApp {
         bool buildReport();
         void registerVariables();
 
+    protected:
+        bool inRange () {
+            bool result = true;
+            result &= (m_lat <= 90.0);
+            result &= (m_lat >= -90.0);
+            result &= (m_lon <= 180.0);
+            result &= (m_lon >= -180.0);
+            return result;
+        }
+
     private: // Configuration variables
         std::string     m_inputLatVar;
         std::string     m_inputLonVar;

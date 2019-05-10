@@ -76,8 +76,8 @@ bool Geodesy::OnConnectToServer() {
 
 bool Geodesy::Iterate() {
     AppCastingMOOSApp::Iterate();
-    if (m_fixValid) {
-        if ((m_outputLocalNorthVar.length() > 0) && (m_outputLocalEastVar.length() > 0) && m_originValid) {
+    if (m_fixValid && m_originValid) {
+        if ((m_outputLocalNorthVar.length() > 0) && (m_outputLocalEastVar.length() > 0)) {
             if (m_geo.LatLong2LocalGrid(m_lat, m_lon, m_localNorth, m_localEast)) {
                 Notify(m_outputLocalNorthVar.c_str(), m_localNorth);
                 Notify(m_outputLocalEastVar.c_str(), m_localEast);
@@ -85,8 +85,8 @@ bool Geodesy::Iterate() {
         }
         if ((m_outputNorthingVar.length() > 0) && (m_outputEastingVar.length() > 0) && (m_outputUTMzone.length() > 0)) {
             if (m_geo.LatLong2LocalUTM(m_lat, m_lon, m_northing, m_easting)) {
-                Notify(m_outputNorthingVar.c_str(), m_localNorth);
-                Notify(m_outputEastingVar.c_str(), m_localEast);
+                Notify(m_outputNorthingVar.c_str(), m_northing);
+                Notify(m_outputEastingVar.c_str(), m_easting);
                 Notify(m_outputUTMzone.c_str(), m_geo.GetUTMZone());
             }
         }
@@ -110,7 +110,7 @@ bool Geodesy::Iterate() {
             m_originValid = m_geo.Initialise(m_originLat, m_originLon);
             m_originRebaseCount = 0;
             m_lastOriginTransmission = 0;
-        } else if (m_fixValid) {
+        } else if (m_fixValid && inRange()) {
             m_originLatAccumulator += m_lat;
             m_originLonAccumulator += m_lon;
             m_originRebaseCount++;
@@ -228,20 +228,40 @@ bool Geodesy::buildReport() {
     m_msgs << "Geodesy                                      \n";
     m_msgs << "============================================ \n";
 
-    ACTable actab(5);
-    actab << "  | WGS84 | UTM | Local | Origin (WG84)";
-    actab.addHeaderLines();
-    actab << "North";
-    actab << m_lat;
-    actab << m_northing;
-    actab << m_localNorth;
-    actab << m_originLat;
-    actab << "East";
-    actab << m_lon;
-    actab << m_easting;
-    actab << m_localEast;
-    actab << m_originLon;
-    actab << "Zone" << " " << m_geo.GetUTMZone();
-    m_msgs << actab.getFormattedString(); 
+    if (m_originValid) {
+        ACTable actab(6);
+        actab << "  | WGS84 | UTM (Local) | UTM (Global) | CMOOSGrid | Origin (WG84)";
+        actab.addHeaderLines();
+        actab << "North";
+        actab << m_lat;
+        actab << m_northing;
+        actab << m_northing + m_geo.GetOriginNorthing();
+        actab << m_localNorth;
+        actab << m_originLat;
+        actab << "East";
+        actab << m_lon;
+        actab << m_easting;
+        actab << m_easting + m_geo.GetOriginEasting();
+        actab << m_localEast;
+        actab << m_originLon;
+        actab << "Zone";
+        actab << m_geo.GetUTMZone();
+        actab << " ";
+        actab << " ";
+        actab << " ";
+        actab << " ";
+        m_msgs << actab.getFormattedString();
+    } else {
+        m_msgs << "*** Rebasing Origin *** \n";
+        ACTable actab(5);
+        actab << "Lat | Lon | Reboase Count | Lat Accumulator | Lon Accumulator";
+        actab.addHeaderLines();
+        actab << m_lat;
+        actab << m_lon;
+        actab << m_originRebaseCount;
+        actab << m_originLatAccumulator;
+        actab << m_originLonAccumulator;
+        m_msgs << actab.getFormattedString();
+    }
     return(true);
 }
