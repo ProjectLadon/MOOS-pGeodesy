@@ -199,7 +199,7 @@ bool Geodesy::OnStartUp() {
         if(!handled) reportUnhandledConfigWarning(orig);
     }
 
-    if ((m_MissionReader.GetValue("LatOrigin", m_originLat)) && (m_MissionReader.GetValue("LongOrigin", m_originLon))) {
+    if ((m_MissionReader.GetValue("LatOrigin", m_originLat)) && (m_MissionReader.GetValue("LonOrigin", m_originLon))) {
         m_originValid = m_geo.Initialise(m_originLat, m_originLon);
         m_lastOriginValid = m_originValid;
     }
